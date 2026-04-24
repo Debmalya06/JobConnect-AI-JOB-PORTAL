@@ -1,8 +1,9 @@
-const express = require("express");
+import express from "express";
+import authMiddleware from "../middlewares/authMiddlewares.js";
+import { updateCompanyProfile } from "../controllers/companyController.js";
+
 const router = express.Router();
 
-router.get("/dashboard", (req, res) => {
-  res.json({ message: "Company Dashboard" });
-});
+router.put("/profile", authMiddleware, updateCompanyProfile);
 
-module.exports = router;
+export default router;

@@ -1,7 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { Briefcase, Check, ChevronDown, Clock, DollarSign, MapPin } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import toast from "react-hot-toast"
+import { Briefcase, Check, ChevronDown, Clock, DollarSign, MapPin, X } from "lucide-react"
 import  Button  from "../../../components/ui/Button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../components/ui/Card"
 import  Checkbox  from "../../../components/ui/Checkbox"
@@ -22,17 +24,69 @@ import  Textarea  from "../../../components/ui/Textarea"
 
 function PostJobPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  // State to handle the dropdowns and popovers properly
+  const [selectedCategory, setSelectedCategory] = useState("")
+  const [selectedEmploymentType, setSelectedEmploymentType] = useState("")
+  const [selectedSalaryPeriod, setSelectedSalaryPeriod] = useState("yearly")
+  const [selectedSkills, setSelectedSkills] = useState([])
+  const [isSkillsPopoverOpen, setIsSkillsPopoverOpen] = useState(false)
+  const [aiMatching, setAiMatching] = useState(false)
+
+  const handleAddSkill = (skill) => {
+    if (!selectedSkills.includes(skill)) {
+      setSelectedSkills([...selectedSkills, skill])
+    }
+    setIsSkillsPopoverOpen(false)
+  }
+
+  const handleRemoveSkill = (skillToRemove) => {
+    setSelectedSkills(selectedSkills.filter(skill => skill !== skillToRemove))
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate form submission
-    setTimeout(() => {
+    try {
+      const token = localStorage.getItem("token")
+      const title = document.getElementById("job-title")?.value
+      const description = document.getElementById("job-description")?.value
+      const location = document.getElementById("location")?.value
+      const minSalary = document.getElementById("min-salary")?.value || ""
+      const maxSalary = document.getElementById("max-salary")?.value || ""
+      const vacancies = document.getElementById("vacancies")?.value || 1
+
+      const response = await fetch("http://localhost:5001/api/jobs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          location,
+          vacancies,
+          salary: `${minSalary} - ${maxSalary}`,
+          category: selectedCategory,
+          employmentType: selectedEmploymentType,
+          salaryPeriod: selectedSalaryPeriod,
+          skills: selectedSkills
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || data.error || "Failed to post job")
+
+      toast.success("Job posted successfully!")
+      navigate("/dashboard/company")
+    } catch (error) {
+      toast.error(error.message)
+    } finally {
       setIsSubmitting(false)
-      // Redirect or show success message
-      alert("Job posted successfully!")
-    }, 1500)
+    }
   }
 
   const jobCategories = [
@@ -49,26 +103,9 @@ function PostJobPage() {
   ]
 
   const skills = [
-    "JavaScript",
-    "React",
-    "Angular",
-    "Vue.js",
-    "Node.js",
-    "Python",
-    "Java",
-    "C#",
-    "PHP",
-    "Ruby",
-    "Swift",
-    "Kotlin",
-    "SQL",
-    "MongoDB",
-    "AWS",
-    "Docker",
-    "Kubernetes",
-    "Git",
-    "Figma",
-    "Adobe XD",
+    "JavaScript", "React", "Angular", "Vue.js", "Node.js", "Python", 
+    "Java", "C#", "PHP", "Ruby", "Swift", "Kotlin", "SQL", 
+    "MongoDB", "AWS", "Docker", "Kubernetes", "Git", "Figma", "Adobe XD"
   ]
 
   return (
@@ -92,14 +129,14 @@ function PostJobPage() {
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="job-category">Job Category</Label>
-                  <Select>
+                  <Label>Job Category</Label>
+                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
                       {jobCategories.map((category) => (
-                        <SelectItem key={category} value={category.toLowerCase().replace(/\s+/g, "-")}>
+                        <SelectItem key={category} value={category}>
                           {category}
                         </SelectItem>
                       ))}
@@ -108,8 +145,8 @@ function PostJobPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="employment-type">Employment Type</Label>
-                  <Select>
+                  <Label>Employment Type</Label>
+                  <Select value={selectedEmploymentType} onValueChange={setSelectedEmploymentType}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
@@ -136,46 +173,55 @@ function PostJobPage() {
 
               <div className="space-y-2">
                 <Label>Required Skills</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-between">
-                      Select skills
-                      <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[400px] p-0" align="start">
-                    <Command>
-                      <CommandInput placeholder="Search skills..." />
-                      <CommandList>
-                        <CommandEmpty>No skills found.</CommandEmpty>
-                        <CommandGroup className="max-h-[300px] overflow-auto">
-                          {skills.map((skill) => (
-                            <CommandItem
-                              key={skill}
-                              value={skill}
-                              onSelect={() => {
-                                // Handle selection
-                              }}
-                            >
-                              <Check className="mr-2 h-4 w-4 opacity-0" />
-                              {skill}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {["React", "JavaScript", "HTML/CSS"].map((skill) => (
+                
+                {/* Manual dropdown instead of Popover for command, since Popover context might conflict with command clicks */}
+                <div className="relative">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="w-full justify-between"
+                    onClick={() => setIsSkillsPopoverOpen(!isSkillsPopoverOpen)}
+                  >
+                    Select skills
+                    <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+                  </Button>
+                  
+                  {isSkillsPopoverOpen && (
+                    <div className="absolute z-50 mt-1 w-full rounded-md border bg-white shadow-lg p-2 max-h-60 overflow-auto">
+                      <div className="space-y-1">
+                        {skills.filter(s => !selectedSkills.includes(s)).map(skill => (
+                          <div 
+                            key={skill}
+                            onClick={() => handleAddSkill(skill)}
+                            className="p-2 hover:bg-gray-100 cursor-pointer rounded-md text-sm"
+                          >
+                            {skill}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {selectedSkills.map((skill) => (
                     <div
                       key={skill}
                       className="flex items-center rounded-full bg-purple-100 px-3 py-1 text-sm text-purple-600"
                     >
                       {skill}
-                      <button className="ml-1 text-purple-400 hover:text-purple-600">×</button>
+                      <button 
+                        type="button" 
+                        onClick={() => handleRemoveSkill(skill)}
+                        className="ml-1 text-purple-400 hover:text-purple-600 focus:outline-none"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
                     </div>
                   ))}
+                  {selectedSkills.length === 0 && (
+                    <span className="text-sm text-gray-400">No skills selected</span>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -218,18 +264,23 @@ function PostJobPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="relative">
                       <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input type="number" placeholder="Min" className="pl-10" />
+                      <Input id="min-salary" type="number" placeholder="Min" className="pl-10" />
                     </div>
                     <div className="relative">
                       <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                      <Input type="number" placeholder="Max" className="pl-10" />
+                      <Input id="max-salary" type="number" placeholder="Max" className="pl-10" />
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="salary-period">Salary Period</Label>
-                  <Select defaultValue="yearly">
+                  <Label>Vacancies</Label>
+                  <Input id="vacancies" type="number" placeholder="Number of openings" defaultValue={1} min={1} />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Salary Period</Label>
+                  <Select value={selectedSalaryPeriod} onValueChange={setSelectedSalaryPeriod}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select period" />
                     </SelectTrigger>
@@ -275,7 +326,11 @@ function PostJobPage() {
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="ai-matching" />
+                  <Checkbox 
+                    id="ai-matching" 
+                    checked={aiMatching}
+                    onChange={(e) => setAiMatching(e.target.checked)}
+                  />
                   <Label htmlFor="ai-matching">Enable AI-powered candidate matching</Label>
                 </div>
               </CardContent>
@@ -304,4 +359,3 @@ function PostJobPage() {
 }
 
 export default PostJobPage
-

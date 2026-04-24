@@ -22,16 +22,6 @@ function Sidebar({ userType }) {
       href: "/dashboard/candidate/applications",
     },
     {
-      title: "Messages",
-      icon: MessageSquare,
-      href: "/dashboard/candidate/messages",
-    },
-    {
-      title: "Notifications",
-      icon: Bell,
-      href: "/dashboard/candidate/notifications",
-    },
-    {
       title: "Profile",
       icon: User,
       href: "/dashboard/candidate/profile",
@@ -65,11 +55,6 @@ function Sidebar({ userType }) {
       href: "/dashboard/company/candidates",
     },
     {
-      title: "Messages",
-      icon: MessageSquare,
-      href: "/dashboard/company/messages",
-    },
-    {
       title: "Company Profile",
       icon: Building2,
       href: "/dashboard/company/profile",
@@ -84,7 +69,7 @@ function Sidebar({ userType }) {
   const menuItems = userType === "candidate" ? candidateMenuItems : companyMenuItems
 
   return (
-    <div className="hidden md:flex h-screen w-64 flex-col bg-white border-r">
+    <div className="flex h-full w-64 flex-col bg-white border-r">
       <div className="border-b p-4">
         <Link to="/" className="flex items-center gap-2 text-xl font-bold text-purple-600">
           <Briefcase className="h-6 w-6" />

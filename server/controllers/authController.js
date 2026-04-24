@@ -1,7 +1,7 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const Candidate = require("../models/Candidate");
-const Company = require("../models/Company");
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import Candidate from "../models/Candidate.js";
+import Company from "../models/Company.js";
 
 const registerCandidate = async (req, res) => {
   try {
@@ -51,11 +51,34 @@ const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user._id, userType }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    res.json({ token });
+    const token = jwt.sign({ id: user._id, userType }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    
+    // Remove password from user object
+    const userObject = user.toObject();
+    delete userObject.password;
+
+    res.json({ token, user: userObject });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-module.exports = { registerCandidate, registerCompany, login };
+const getMe = async (req, res) => {
+  try {
+    const { id, userType } = req.user;
+    let user;
+    if (userType === "candidate") {
+      user = await Candidate.findById(id).select("-password");
+    } else if (userType === "company") {
+      user = await Company.findById(id).select("-password");
+    }
+    
+    if (!user) return res.status(404).json({ message: "User not found" });
+    
+    res.json({ user, userType });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export { registerCandidate, registerCompany, login, getMe };

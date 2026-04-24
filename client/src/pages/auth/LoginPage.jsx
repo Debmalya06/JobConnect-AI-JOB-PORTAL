@@ -3,25 +3,11 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Briefcase, Building2, Lock, Mail, User } from "lucide-react"
+import toast from "react-hot-toast"
 
 import Button from "../../components/ui/Button"
-import Checkbox from "../../components/ui/Checkbox"
-import Progress from "../../components/ui/Progress"
-import RadioGroup from "../../components/ui/RadioGroup"
-
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem
-} from "../../components/ui/Select" // ✅ FIXED named imports
-
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent
-} from "../../components/ui/Popover"
+import Input from "../../components/ui/Input"
+import Label from "../../components/ui/Label"
 
 import {
   Card,
@@ -32,31 +18,62 @@ import {
   CardTitle
 } from "../../components/ui/Card"
 
-import Input from "../../components/ui/Input"
-import Label from "../../components/ui/Label"
-
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger
 } from "../../components/ui/Tabs"
+import { useAuth } from "../../context/AuthContext"
 
 function LoginPage() {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [activeTab, setActiveTab] = useState("candidate")
+  const { login } = useAuth()
 
-  const handleLogin = (userType) => {
+  const handleLogin = async (userType) => {
+    if (!email || !password) {
+      return toast.error("Please fill all fields");
+    }
+    
     setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
-      if (userType === "candidate") {
-        navigate("/dashboard/candidate")
-      } else {
-        navigate("/dashboard/company")
+    try {
+      const response = await fetch("http://localhost:5001/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, userType })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
       }
-    }, 1500)
+      
+      login(data.token, data.user, userType);
+      toast.success("Login successful!");
+      
+      if (userType === "candidate") {
+        navigate("/dashboard/candidate");
+      } else {
+        navigate("/dashboard/company");
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   }
+
+  // Reset fields when tab changes
+  const handleTabChange = (val) => {
+    setActiveTab(val);
+    setEmail("");
+    setPassword("");
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
@@ -68,20 +85,7 @@ function LoginPage() {
           </Link>
         </div>
 
-        <Tabs defaultValue="candidate" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="candidate" className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              <span>Candidate</span>
-            </TabsTrigger>
-            <TabsTrigger value="company" className="flex items-center gap-2">
-              <Building2 className="h-4 w-4" />
-              <span>Company</span>
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Candidate Login */}
-          <TabsContent value="candidate">
+        {activeTab === "candidate" ? (
             <Card>
               <CardHeader>
                 <CardTitle>Candidate Login</CardTitle>
@@ -92,19 +96,29 @@ function LoginPage() {
                   <Label htmlFor="candidate-email">Email</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input id="candidate-email" type="email" placeholder="you@example.com" className="pl-10" />
+                    <Input 
+                      id="candidate-email" 
+                      type="email" 
+                      placeholder="you@example.com" 
+                      className="pl-10" 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="candidate-password">Password</Label>
-                    <Link to="/auth/forgot-password" className="text-xs text-purple-600 hover:underline">
-                      Forgot password?
-                    </Link>
                   </div>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input id="candidate-password" type="password" className="pl-10" />
+                    <Input 
+                      id="candidate-password" 
+                      type="password" 
+                      className="pl-10" 
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
                   </div>
                 </div>
               </CardContent>
@@ -116,18 +130,23 @@ function LoginPage() {
                 >
                   {isLoading ? "Logging in..." : "Login"}
                 </Button>
-                <div className="text-center text-sm">
-                  Don't have an account?{" "}
-                  <Link to="/auth/register?type=candidate" className="text-purple-600 hover:underline">
-                    Register
-                  </Link>
+                <div className="flex flex-col space-y-2 text-center text-sm">
+                  <div>
+                    Don't have an account?{" "}
+                    <Link to="/auth/register?type=candidate" className="text-purple-600 hover:underline">
+                      Register
+                    </Link>
+                  </div>
+                  <div className="pt-2 border-t mt-2">
+                    Are you a company?{" "}
+                    <button onClick={() => handleTabChange("company")} className="text-purple-600 hover:underline font-medium">
+                      Company Login
+                    </button>
+                  </div>
                 </div>
               </CardFooter>
             </Card>
-          </TabsContent>
-
-          {/* Company Login */}
-          <TabsContent value="company">
+        ) : (
             <Card>
               <CardHeader>
                 <CardTitle>Company Login</CardTitle>
@@ -138,19 +157,29 @@ function LoginPage() {
                   <Label htmlFor="company-email">Email</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input id="company-email" type="email" placeholder="company@example.com" className="pl-10" />
+                    <Input 
+                      id="company-email" 
+                      type="email" 
+                      placeholder="company@example.com" 
+                      className="pl-10" 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="company-password">Password</Label>
-                    <Link to="/auth/forgot-password" className="text-xs text-purple-600 hover:underline">
-                      Forgot password?
-                    </Link>
                   </div>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input id="company-password" type="password" className="pl-10" />
+                    <Input 
+                      id="company-password" 
+                      type="password" 
+                      className="pl-10" 
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
                   </div>
                 </div>
               </CardContent>
@@ -162,16 +191,23 @@ function LoginPage() {
                 >
                   {isLoading ? "Logging in..." : "Login"}
                 </Button>
-                <div className="text-center text-sm">
-                  Don't have an account?{" "}
-                  <Link to="/auth/register?type=company" className="text-purple-600 hover:underline">
-                    Register
-                  </Link>
+                <div className="flex flex-col space-y-2 text-center text-sm">
+                  <div>
+                    Don't have an account?{" "}
+                    <Link to="/auth/register?type=company" className="text-purple-600 hover:underline">
+                      Register
+                    </Link>
+                  </div>
+                  <div className="pt-2 border-t mt-2">
+                    Are you a candidate?{" "}
+                    <button onClick={() => handleTabChange("candidate")} className="text-purple-600 hover:underline font-medium">
+                      Candidate Login
+                    </button>
+                  </div>
                 </div>
               </CardFooter>
             </Card>
-          </TabsContent>
-        </Tabs>
+        )}
       </div>
     </div>
   )

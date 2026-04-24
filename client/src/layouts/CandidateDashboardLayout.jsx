@@ -12,7 +12,7 @@ function CandidateDashboardLayout({ children }) {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen overflow-hidden">
       {/* Mobile sidebar */}
       {isSidebarOpen && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50 md:hidden" onClick={toggleSidebar}>
@@ -23,11 +23,13 @@ function CandidateDashboardLayout({ children }) {
       )}
 
       {/* Desktop sidebar */}
-      <Sidebar userType="candidate" />
+      <div className="hidden md:block h-screen">
+        <Sidebar userType="candidate" />
+      </div>
 
-      <div className="flex-1">
-        <Header userType="candidate" userName="John Doe" toggleSidebar={toggleSidebar} />
-        <main className="p-6">{children}</main>
+      <div className="flex-1 flex flex-col h-screen overflow-hidden">
+        <Header userType="candidate" toggleSidebar={toggleSidebar} />
+        <main className="flex-1 overflow-y-auto p-6">{children}</main>
       </div>
     </div>
   )

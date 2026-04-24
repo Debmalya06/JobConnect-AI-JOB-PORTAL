@@ -5,7 +5,7 @@ import "./styles/Checkbox.css"
 
 const Checkbox = forwardRef(({ className = "", checked, onChange, disabled = false, id, ...props }, ref) => {
   return (
-    <div className={`checkbox-container ${className}`}>
+    <label className={`checkbox-container ${className}`}>
       <input
         type="checkbox"
         id={id}
@@ -32,11 +32,10 @@ const Checkbox = forwardRef(({ className = "", checked, onChange, disabled = fal
           </svg>
         )}
       </div>
-    </div>
+    </label>
   )
 })
 
 Checkbox.displayName = "Checkbox"
 
 export default Checkbox
-

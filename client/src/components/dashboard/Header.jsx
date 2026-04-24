@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Bell, Menu, MessageSquare, User } from "lucide-react"
+import { useAuth } from "../../context/AuthContext"
 import Button from "../../components/ui/Button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../components/ui/Card";
 import Checkbox from "../../components/ui/Checkbox";
@@ -16,8 +17,17 @@ import { Popover, PopoverTrigger, PopoverContent } from "../../components/ui/Pop
 import RadioGroup from "../ui/RadioGroup";
 import Separator from "../ui/Separator";
 
-function Header({ userType, userName, toggleSidebar }) {
+function Header({ userType, toggleSidebar }) {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
+  const { user, logout } = useAuth() || {}
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate("/auth/login")
+  }
+
+  const displayName = user?.firstName ? `${user.firstName} ${user.lastName}` : user?.companyName || "User";
 
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-white px-4">
@@ -31,15 +41,6 @@ function Header({ userType, userName, toggleSidebar }) {
       </div>
 
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
-          <span className="absolute right-1 top-1 flex h-2 w-2 rounded-full bg-red-500"></span>
-        </Button>
-
-        <Button variant="ghost" size="icon">
-          <MessageSquare className="h-5 w-5" />
-        </Button>
-
         <div className="relative">
           <Button
             variant="ghost"
@@ -49,7 +50,7 @@ function Header({ userType, userName, toggleSidebar }) {
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-100 text-purple-600">
               <User className="h-4 w-4" />
             </div>
-            <span className="hidden md:inline-block">{userName}</span>
+            <span className="hidden md:inline-block">{displayName}</span>
           </Button>
 
           {isProfileMenuOpen && (
@@ -70,13 +71,15 @@ function Header({ userType, userName, toggleSidebar }) {
                 Settings
               </Link>
               <div className="border-t"></div>
-              <Link
-                to="/auth/login"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                onClick={() => setIsProfileMenuOpen(false)}
+              <button
+                onClick={() => {
+                  setIsProfileMenuOpen(false);
+                  handleLogout();
+                }}
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
                 Logout
-              </Link>
+              </button>
             </div>
           )}
         </div>

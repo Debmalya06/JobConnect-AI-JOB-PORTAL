@@ -1,8 +1,9 @@
-const express = require("express");
+import express from "express";
+import authMiddleware from "../middlewares/authMiddlewares.js";
+import { updateProfile } from "../controllers/candidateController.js";
+
 const router = express.Router();
 
-router.get("/dashboard", (req, res) => {
-  res.json({ message: "Candidate Dashboard" });
-});
+router.put("/profile", authMiddleware, updateProfile);
 
-module.exports = router;
+export default router;
