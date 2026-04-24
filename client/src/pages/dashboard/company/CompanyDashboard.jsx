@@ -1,4 +1,4 @@
-import API_URL from '../../../../utils/api';
+import API_URL from '../../../utils/api';
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { ArrowRight, Briefcase, FileText, Users, Eye, TrendingUp } from "lucide-react"
@@ -290,5 +290,6 @@ function CompanyDashboard() {
 }
 
 export default CompanyDashboard
+
 
 
