@@ -1,3 +1,4 @@
+import API_URL from '../utils/api';;
 import { createContext, useState, useEffect, useContext, useCallback } from "react";
 
 const AuthContext = createContext({
@@ -23,7 +24,7 @@ export const AuthProvider = ({ children }) => {
       return;
     }
     try {
-      const response = await fetch("http://localhost:5001/api/auth/me", {
+      const response = await fetch(`${API_URL}/api/auth/me`, {
         headers: { Authorization: token },
       });
       if (response.ok) {
@@ -70,3 +71,6 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+
+

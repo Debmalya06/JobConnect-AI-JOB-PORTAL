@@ -1,3 +1,4 @@
+import API_URL from '../../../utils/api';;
 "use client"
 import { useState, useEffect } from "react"
 import { Building2, Calendar } from "lucide-react"
@@ -11,7 +12,7 @@ function CandidateApplicationsPage() {
     const fetchApplications = async () => {
       try {
         const token = localStorage.getItem("token")
-        const res = await fetch("http://localhost:5001/api/applications/candidate", {
+        const res = await fetch(`${API_URL}/api/applications/candidate`, {
           headers: { Authorization: token }
         })
         if (res.ok) {
@@ -73,3 +74,6 @@ function CandidateApplicationsPage() {
 }
 
 export default CandidateApplicationsPage
+
+
+

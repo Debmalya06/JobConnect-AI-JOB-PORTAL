@@ -1,3 +1,4 @@
+import API_URL from '../../../utils/api';;
 "use client"
 import { useState, useEffect } from "react"
 import { useAuth } from "../../../context/AuthContext"
@@ -43,7 +44,7 @@ function CompanyProfilePage() {
     setSaving(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5001/api/company/profile", {
+      const res = await fetch(`${API_URL}/api/company/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -230,3 +231,6 @@ function CompanyProfilePage() {
 }
 
 export default CompanyProfilePage;
+
+
+

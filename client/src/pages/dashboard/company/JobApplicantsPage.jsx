@@ -1,3 +1,4 @@
+import API_URL from '../../../utils/api';;
 "use client"
 import { useState, useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
@@ -24,13 +25,13 @@ function JobApplicantsPage() {
       const token = localStorage.getItem("token")
 
       // Fetch job details
-      const jobRes = await fetch(`http://localhost:5001/api/jobs/${jobId}`, {
+      const jobRes = await fetch(`$API_URL/api/jobs/${jobId}`, {
         headers: { Authorization: token }
       })
       if (jobRes.ok) setJob(await jobRes.json())
 
       // Fetch applicants for this job
-      const appRes = await fetch(`http://localhost:5001/api/applications/company?jobId=${jobId}`, {
+      const appRes = await fetch(`$API_URL/api/applications/company?jobId=${jobId}`, {
         headers: { Authorization: token }
       })
       if (appRes.ok) {
@@ -62,7 +63,7 @@ function JobApplicantsPage() {
     setAiProcessing(true)
     try {
       const token = localStorage.getItem("token")
-      const res = await fetch("http://localhost:5001/api/applications/ai-shortlist", {
+      const res = await fetch(`${API_URL}/api/applications/ai-shortlist`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: token },
         body: JSON.stringify({ jobId })
@@ -82,7 +83,7 @@ function JobApplicantsPage() {
   const handleBulkAction = async (status) => {
     try {
       const token = localStorage.getItem("token")
-      const res = await fetch("http://localhost:5001/api/applications/status", {
+      const res = await fetch(`${API_URL}/api/applications/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: token },
         body: JSON.stringify({ applicationIds: selectedCandidates, status })
@@ -288,3 +289,6 @@ function JobApplicantsPage() {
 }
 
 export default JobApplicantsPage
+
+
+

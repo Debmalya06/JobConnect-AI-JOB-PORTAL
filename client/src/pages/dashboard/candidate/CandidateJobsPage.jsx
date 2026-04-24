@@ -1,3 +1,4 @@
+import API_URL from '../../../utils/api';;
 "use client"
 import { useState, useEffect } from "react"
 import { Briefcase, Building2, MapPin } from "lucide-react"
@@ -14,7 +15,7 @@ function CandidateJobsPage() {
     const fetchJobs = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:5001/api/jobs", {
+        const res = await fetch("$API_URL/api/jobs", {
           headers: { Authorization: token }
         });
         if (res.ok) {
@@ -33,7 +34,7 @@ function CandidateJobsPage() {
   const handleApply = async (jobId) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5001/api/applications/apply", {
+      const res = await fetch("$API_URL/api/applications/apply", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -84,3 +85,5 @@ function CandidateJobsPage() {
   )
 }
 export default CandidateJobsPage;
+
+

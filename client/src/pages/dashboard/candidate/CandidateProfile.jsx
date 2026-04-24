@@ -1,3 +1,4 @@
+import API_URL from '../../../utils/api';;
 "use client"
 import { useState, useEffect } from "react"
 import { Briefcase, Building2, Calendar, Edit, GraduationCap, MapPin, Save, User, FileText } from "lucide-react"
@@ -44,7 +45,7 @@ function CandidateProfile() {
       const token = localStorage.getItem("token")
       const updatedSkills = formData.skills.split(",").map(s => s.trim()).filter(Boolean)
       
-      const res = await fetch("http://localhost:5001/api/candidate/profile", {
+      const res = await fetch(`${API_URL}/api/candidate/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -246,3 +247,6 @@ function CandidateProfile() {
 }
 
 export default CandidateProfile
+
+
+

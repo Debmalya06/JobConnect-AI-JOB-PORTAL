@@ -1,3 +1,4 @@
+import API_URL from '../../../utils/api';;
 "use client"
 import { useState, useEffect } from "react"
 import { ChevronDown, Download, Search, User, Briefcase } from "lucide-react"
@@ -21,7 +22,7 @@ function CandidatesPage() {
     const fetchCandidates = async () => {
       try {
         const token = localStorage.getItem("token")
-        const res = await fetch("http://localhost:5001/api/applications/company", {
+        const res = await fetch(`${API_URL}/api/applications/company`, {
           headers: { Authorization: token }
         })
         if (res.ok) setCandidates(await res.json())
@@ -62,7 +63,7 @@ function CandidatesPage() {
     if (!selectedCandidates.length) return
     try {
       const token = localStorage.getItem("token")
-      const res = await fetch("http://localhost:5001/api/applications/status", {
+      const res = await fetch(`${API_URL}/api/applications/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: token },
         body: JSON.stringify({ applicationIds: selectedCandidates, status })
@@ -212,3 +213,6 @@ function CandidatesPage() {
 }
 
 export default CandidatesPage
+
+
+

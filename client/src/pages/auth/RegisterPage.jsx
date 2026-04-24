@@ -1,3 +1,4 @@
+import API_URL from '../../utils/api';;
 "use client"
 
 import { useState } from "react"
@@ -46,7 +47,7 @@ function RegisterPage() {
 
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:5001/api/auth/register/candidate", {
+      const response = await fetch(`${API_URL}/api/auth/register/candidate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -80,7 +81,7 @@ function RegisterPage() {
 
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:5001/api/auth/register/company", {
+      const response = await fetch(`${API_URL}/api/auth/register/company`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -265,3 +266,6 @@ function RegisterPage() {
 }
 
 export default RegisterPage
+
+
+

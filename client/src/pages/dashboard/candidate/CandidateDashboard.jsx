@@ -1,3 +1,4 @@
+import API_URL from '../../../utils/api';;
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { ArrowRight, Briefcase, Building2, Clock, Search } from "lucide-react"
@@ -26,7 +27,7 @@ function CandidateDashboard() {
       try {
         const token = localStorage.getItem("token")
         
-        const appRes = await fetch("http://localhost:5001/api/applications/candidate", {
+        const appRes = await fetch(`${API_URL}/api/applications/candidate`, {
           headers: { Authorization: token }
         })
         if (appRes.ok) {
@@ -34,7 +35,7 @@ function CandidateDashboard() {
           setApplications(appData)
         }
         
-        const jobsRes = await fetch("http://localhost:5001/api/jobs", {
+        const jobsRes = await fetch(`${API_URL}/api/jobs`, {
           headers: { Authorization: token }
         })
         if (jobsRes.ok) {
@@ -221,3 +222,6 @@ function CandidateDashboard() {
 }
 
 export default CandidateDashboard
+
+
+

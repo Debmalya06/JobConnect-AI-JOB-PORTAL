@@ -1,3 +1,4 @@
+import API_URL from '../../../../utils/api';
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { ArrowRight, Briefcase, FileText, Users, Eye, TrendingUp } from "lucide-react"
@@ -19,8 +20,8 @@ function CompanyDashboard() {
         const token = localStorage.getItem("token")
 
         const [jobsRes, appRes] = await Promise.all([
-          fetch("http://localhost:5001/api/jobs/company", { headers: { Authorization: token } }),
-          fetch("http://localhost:5001/api/applications/company", { headers: { Authorization: token } })
+          fetch(`${API_URL}/api/jobs/company`, { headers: { Authorization: token } }),
+          fetch(`${API_URL}/api/applications/company`, { headers: { Authorization: token } })
         ])
 
         if (jobsRes.ok) setAllJobs(await jobsRes.json())
@@ -52,7 +53,7 @@ function CompanyDashboard() {
   const handleCandidateAction = async (applicationId, status) => {
     try {
       const token = localStorage.getItem("token")
-      const res = await fetch("http://localhost:5001/api/applications/status", {
+      const res = await fetch(`${API_URL}/api/applications/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: token },
         body: JSON.stringify({ applicationIds: [applicationId], status })
@@ -289,3 +290,5 @@ function CompanyDashboard() {
 }
 
 export default CompanyDashboard
+
+

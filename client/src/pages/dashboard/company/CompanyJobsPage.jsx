@@ -1,3 +1,4 @@
+import API_URL from '../../../utils/api';;
 "use client"
 import { useState, useEffect } from "react"
 import { Briefcase, MapPin, Users, Edit, Trash2, Eye } from "lucide-react"
@@ -15,7 +16,7 @@ function CompanyJobsPage() {
     const fetchJobs = async () => {
       try {
         const token = localStorage.getItem("token")
-        const res = await fetch("http://localhost:5001/api/jobs/company", {
+        const res = await fetch(`${API_URL}/api/jobs/company`, {
           headers: { Authorization: token }
         })
         if (res.ok) {
@@ -34,7 +35,7 @@ function CompanyJobsPage() {
   const handleCloseJob = async (jobId) => {
     try {
       const token = localStorage.getItem("token")
-      const res = await fetch(`http://localhost:5001/api/jobs/${jobId}`, {
+      const res = await fetch(`$API_URL/api/jobs/${jobId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: token },
         body: JSON.stringify({ status: "closed" })
@@ -123,3 +124,6 @@ function CompanyJobsPage() {
 }
 
 export default CompanyJobsPage
+
+
+

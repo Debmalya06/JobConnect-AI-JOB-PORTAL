@@ -1,3 +1,4 @@
+import API_URL from '../../../utils/api';;
 "use client"
 
 import { useState } from "react"
@@ -58,7 +59,7 @@ function PostJobPage() {
       const maxSalary = document.getElementById("max-salary")?.value || ""
       const vacancies = document.getElementById("vacancies")?.value || 1
 
-      const response = await fetch("http://localhost:5001/api/jobs", {
+      const response = await fetch(`${API_URL}/api/jobs`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -359,3 +360,6 @@ function PostJobPage() {
 }
 
 export default PostJobPage
+
+
+
