@@ -15,7 +15,7 @@ function CandidateJobsPage() {
     const fetchJobs = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("$API_URL/api/jobs", {
+        const res = await fetch(`${API_URL}/api/jobs`, {
           headers: { Authorization: token }
         });
         if (res.ok) {
@@ -34,7 +34,7 @@ function CandidateJobsPage() {
   const handleApply = async (jobId) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("$API_URL/api/applications/apply", {
+      const res = await fetch(`${API_URL}/api/applications/apply`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

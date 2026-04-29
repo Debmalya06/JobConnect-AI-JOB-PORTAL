@@ -11,6 +11,7 @@ import PostJobPage from "./pages/dashboard/company/PostJobPage"
 import CandidatesPage from "./pages/dashboard/company/CandidatesPage"
 import CandidateJobsPage from "./pages/dashboard/candidate/CandidateJobsPage"
 import CandidateApplicationsPage from "./pages/dashboard/candidate/CandidateApplicationsPage"
+import CandidateJobAlertsPage from "./pages/dashboard/candidate/CandidateJobAlertsPage"
 import CompanyJobsPage from "./pages/dashboard/company/CompanyJobsPage"
 import EditJobPage from "./pages/dashboard/company/EditJobPage"
 import JobApplicantsPage from "./pages/dashboard/company/JobApplicantsPage"
@@ -59,6 +60,14 @@ function App() {
             element={
               <CandidateDashboardLayout>
                 <CandidateApplicationsPage />
+              </CandidateDashboardLayout>
+            }
+          />
+          <Route
+            path="/dashboard/candidate/job-alerts"
+            element={
+              <CandidateDashboardLayout>
+                <CandidateJobAlertsPage />
               </CandidateDashboardLayout>
             }
           />

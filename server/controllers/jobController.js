@@ -1,4 +1,5 @@
 import Job from "../models/Job.js";
+import { processJobAlertNotifications } from "../services/jobAlertService.js";
 
 export const postJob = async (req, res) => {
   try {
@@ -23,6 +24,7 @@ export const postJob = async (req, res) => {
     });
     
     await newJob.save();
+    setImmediate(() => processJobAlertNotifications(newJob));
     res.status(201).json({ message: "Job posted successfully", job: newJob });
   } catch (error) {
     res.status(500).json({ error: error.message });

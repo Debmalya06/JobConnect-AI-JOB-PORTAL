@@ -31,7 +31,7 @@ function EditJobPage() {
     const fetchJob = async () => {
       try {
         const token = localStorage.getItem("token")
-        const res = await fetch(`$API_URL/api/jobs/${id}`, {
+        const res = await fetch(`${API_URL}/api/jobs/${id}`, {
           headers: { Authorization: token }
         })
         if (res.ok) {
@@ -73,7 +73,7 @@ function EditJobPage() {
       const maxSalary = document.getElementById("max-salary")?.value || ""
       const vacancies = document.getElementById("vacancies")?.value || 1
 
-      const response = await fetch(`$API_URL/api/jobs/${id}`, {
+      const response = await fetch(`${API_URL}/api/jobs/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -10,6 +10,7 @@ import candidateRoutes from "./routes/candidateRoutes.js";
 import companyRoutes from "./routes/companyRoutes.js";
 import jobRoutes from "./routes/jobRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
+import jobAlertRoutes from "./routes/jobAlertRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -36,6 +37,7 @@ app.use("/api/candidate", candidateRoutes);
 app.use("/api/company", companyRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/applications", applicationRoutes);
+app.use("/api/job-alerts", jobAlertRoutes);
 
 const PORT = process.env.PORT || 5000;
 

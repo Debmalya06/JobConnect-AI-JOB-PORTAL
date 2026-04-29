@@ -35,7 +35,7 @@ function CompanyJobsPage() {
   const handleCloseJob = async (jobId) => {
     try {
       const token = localStorage.getItem("token")
-      const res = await fetch(`$API_URL/api/jobs/${jobId}`, {
+      const res = await fetch(`${API_URL}/api/jobs/${jobId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: token },
         body: JSON.stringify({ status: "closed" })

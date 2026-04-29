@@ -10,6 +10,16 @@ import Input from "../../../components/ui/Input"
 import Progress from "../../../components/ui/Progress"
 import toast from "react-hot-toast"
 
+async function readApiResponse(response) {
+  const contentType = response.headers.get("content-type") || ""
+  if (contentType.includes("application/json")) return response.json()
+
+  const text = await response.text()
+  return {
+    message: text.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim() || "Unexpected server response",
+  }
+}
+
 function JobApplicantsPage() {
   const { jobId } = useParams()
   const [job, setJob] = useState(null)
@@ -25,13 +35,13 @@ function JobApplicantsPage() {
       const token = localStorage.getItem("token")
 
       // Fetch job details
-      const jobRes = await fetch(`$API_URL/api/jobs/${jobId}`, {
+      const jobRes = await fetch(`${API_URL}/api/jobs/${jobId}`, {
         headers: { Authorization: token }
       })
       if (jobRes.ok) setJob(await jobRes.json())
 
       // Fetch applicants for this job
-      const appRes = await fetch(`$API_URL/api/applications/company?jobId=${jobId}`, {
+      const appRes = await fetch(`${API_URL}/api/applications/company?jobId=${jobId}`, {
         headers: { Authorization: token }
       })
       if (appRes.ok) {
@@ -68,7 +78,7 @@ function JobApplicantsPage() {
         headers: { "Content-Type": "application/json", Authorization: token },
         body: JSON.stringify({ jobId })
       })
-      const data = await res.json()
+      const data = await readApiResponse(res)
       if (!res.ok) throw new Error(data.message || data.error)
       toast.success(data.message)
       // Refresh candidates to show updated scores & statuses

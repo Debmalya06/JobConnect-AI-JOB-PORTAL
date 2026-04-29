@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom"
-import { Bell, Briefcase, Building2, FileText, Home, LogOut, MessageSquare, Search, Settings, User } from "lucide-react"
+import { Bell, Briefcase, Building2, FileText, Home, LogOut, Search, Settings, User } from "lucide-react"
 
 function Sidebar({ userType }) {
   const location = useLocation()
@@ -20,6 +20,11 @@ function Sidebar({ userType }) {
       title: "Applications",
       icon: FileText,
       href: "/dashboard/candidate/applications",
+    },
+    {
+      title: "Job Alerts AI",
+      icon: Bell,
+      href: "/dashboard/candidate/job-alerts",
     },
     {
       title: "Profile",
